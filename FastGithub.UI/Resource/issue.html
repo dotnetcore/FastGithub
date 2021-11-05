@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <title>证书验证</title>
+    <style type="text/css">
+        body {
+            overflow-x: hidden;
+            background-color: #f7f7f7;
+        }
+
+        blockquote {
+            border-left: 5px solid #c5c5c5;
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            background-color: #999;
+        }
+
+        code {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body onContextMenu="return false;">
+    <div class="container">
+        <div>
+            <h3>Firefox</h3>
+            <blockquote>
+                <h4>建立安全连接失败</h4>
+                <p><small>连接到 github.com 时发生错误。对等端的证书有一个无效的签名。</small> </p>
+                <p><small> 错误代码：SEC_ERROR_BAD_SIGNATURE</small> </p>
+            </blockquote>
+
+            <h4>解决办法</h4>
+            <p>
+                <span class="badge">1</span>
+                <span>地址栏输入：</span><code>about:config</code>
+            </p>
+            <p>
+                <span class="badge">2</span>
+                <span>输入首选项名称：</span><code>security.enterprise_roots.enabled</code>
+            </p>
+            <p>
+                <span class="badge">3</span>
+                <span>修改值为：</span><code>true</code>
+            </p>
+        </div>
+
+        <hr />
+
+        <div>
+            <h3>git.exe</h3>
+            <blockquote>
+                <h4>clone、pull或push等证书异常</h4>
+                <p><small>fatal: unable to access 'https://github.com/xxx.git/'</small> </p>
+                <p><small>SSL certificate problem: unable to get local issuer certificate</small> </p>
+            </blockquote>
+
+            <h4>解决办法</h4>
+            <p>
+                <span class="badge">1</span>
+                <span>管理员身份运行：</span><code>cmd</code>
+            </p>
+            <p>
+                <span class="badge">2</span>
+                <span>在cmd输入：</span><code>git config --global http.sslverify false</code>
+            </p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var codes = document.getElementsByTagName('code');
+        for (var i = 0; i < codes.length; i++) {
+            var code = codes[i];
+            code.setAttribute('title', '点击复制');
+            code.addEventListener("click", function () {
+                window.clipboardData.setData("Text", this.outerText);
+            });
+        }
+    </script>
+</body>
+
+</html>

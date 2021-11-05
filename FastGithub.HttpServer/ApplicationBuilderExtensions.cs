@@ -10,6 +10,24 @@ namespace FastGithub
     public static class ApplicationBuilderExtensions
     {
         /// <summary>
+        /// 使用服务头
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="serverHeader"></param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseServerHeader(this IApplicationBuilder app, string serverHeader = nameof(FastGithub))
+        {
+            return app.Use(next => context =>
+            {
+                if (context.Response.HasStarted == false)
+                {
+                    context.Response.Headers.Server = serverHeader;
+                }
+                return next(context);
+            });
+        }
+
+        /// <summary>
         /// 使用http代理中间件
         /// </summary>
         /// <param name="app"></param> 
@@ -29,6 +47,24 @@ namespace FastGithub
         {
             var middleware = app.ApplicationServices.GetRequiredService<RequestLoggingMiddleware>();
             return app.Use(next => context => middleware.InvokeAsync(context, next));
+        }
+
+        /// <summary>
+        /// 禁用请求日志中间件
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
+        public static IApplicationBuilder DisableRequestLogging(this IApplicationBuilder app)
+        {
+            return app.Use(next => context =>
+            {
+                var loggingFeature = context.Features.Get<IRequestLoggingFeature>();
+                if (loggingFeature != null)
+                {
+                    loggingFeature.Enable = false;
+                }
+                return next(context);
+            });
         }
 
         /// <summary>

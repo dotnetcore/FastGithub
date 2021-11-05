@@ -1,5 +1,5 @@
 #! /bin/bash
-cd ./FastGithub/bin/publish
+cd ./publish
  
 # win-x64
 zip -r fastgithub_win-x64.zip fastgithub_win-x64

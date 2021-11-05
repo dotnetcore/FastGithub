@@ -32,6 +32,8 @@ namespace FastGithub.HttpServer
         /// <returns></returns>
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            var feature = new RequestLoggingFeature();
+            context.Features.Set<IRequestLoggingFeature>(feature);
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -41,6 +43,11 @@ namespace FastGithub.HttpServer
             finally
             {
                 stopwatch.Stop();
+            }
+
+            if (feature.Enable == false)
+            {
+                return;
             }
 
             var request = context.Request;
@@ -118,6 +125,11 @@ namespace FastGithub.HttpServer
                 ex = ex.InnerException;
             }
             return builder.ToString();
+        }
+
+        private class RequestLoggingFeature : IRequestLoggingFeature
+        {
+            public bool Enable { get; set; } = true;
         }
     }
 }

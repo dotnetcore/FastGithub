@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,14 +17,20 @@ namespace FastGithub
     /// </summary>
     sealed class AppHostedService : BackgroundService
     {
-        private readonly IOptions<FastGithubOptions> options;
+        private readonly IHost host;
+        private readonly IOptions<AppOptions> appOptions;
+        private readonly IOptions<FastGithubOptions> fastGithubOptions;
         private readonly ILogger<AppHostedService> logger;
 
         public AppHostedService(
-            IOptions<FastGithubOptions> options,
+            IHost host,
+            IOptions<AppOptions> appOptions,
+            IOptions<FastGithubOptions> fastGithubOptions,
             ILogger<AppHostedService> logger)
         {
-            this.options = options;
+            this.host = host;
+            this.appOptions = appOptions;
+            this.fastGithubOptions = fastGithubOptions;
             this.logger = logger;
         }
 
@@ -46,18 +53,29 @@ namespace FastGithub
         /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (OperatingSystem.IsWindows())
-            {
-                return;
-            }
-
             await Task.Delay(TimeSpan.FromSeconds(1d), stoppingToken);
-            if (await this.UseFastGithubProxyAsync() == false)
+            await this.CheckFastGithubProxyAsync(stoppingToken);
+            await this.WaitForParentProcessExitAsync(stoppingToken);
+        }
+
+
+        /// <summary>
+        /// 检测fastgithub代理设置
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task CheckFastGithubProxyAsync(CancellationToken cancellationToken)
+        {
+            if (OperatingSystem.IsWindows() == false)
             {
-                var httpProxyPort = this.options.Value.HttpProxyPort;
-                this.logger.LogWarning($"请设置系统自动代理为http://{IPAddress.Loopback}:{httpProxyPort}，或手动代理http/https为{IPAddress.Loopback}:{httpProxyPort}");
+                if (await this.UseFastGithubProxyAsync() == false)
+                {
+                    var httpProxyPort = this.fastGithubOptions.Value.HttpProxyPort;
+                    this.logger.LogWarning($"请设置系统自动代理为http://{IPAddress.Loopback}:{httpProxyPort}，或手动代理http/https为{IPAddress.Loopback}:{httpProxyPort}");
+                }
             }
         }
+
 
         /// <summary>
         /// 应用fastgithub代理
@@ -73,7 +91,7 @@ namespace FastGithub
                 return false;
             }
 
-            var domain = this.options.Value.DomainConfigs.Keys.FirstOrDefault();
+            var domain = this.fastGithubOptions.Value.DomainConfigs.Keys.FirstOrDefault();
             if (domain == null)
             {
                 return true;
@@ -86,7 +104,7 @@ namespace FastGithub
                 return false;
             }
 
-            var httpProxyPort = this.options.Value.HttpProxyPort;
+            var httpProxyPort = this.fastGithubOptions.Value.HttpProxyPort;
             if (proxyServer.Port != httpProxyPort)
             {
                 return false;
@@ -107,5 +125,33 @@ namespace FastGithub
                 return false;
             }
         }
+
+        /// <summary>
+        /// 等待父进程退出
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task WaitForParentProcessExitAsync(CancellationToken cancellationToken)
+        {
+            var parentId = this.appOptions.Value.ParentProcessId;
+            if (parentId <= 0)
+            {
+                return;
+            }
+
+            try
+            {
+                Process.GetProcessById(parentId).WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, $"获取进程{parentId}异常");
+            }
+            finally
+            {
+                await this.host.StopAsync(cancellationToken);
+            }
+        }
+
     }
 }

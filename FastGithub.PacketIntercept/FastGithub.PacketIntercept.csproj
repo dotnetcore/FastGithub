@@ -9,7 +9,7 @@
 		<PackageReference Include="DNS" Version="6.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="FastGithub.WinDiverts" Version="1.4.1" />
+		<PackageReference Include="FastGithub.WinDiverts" Version="1.4.1" />
 	</ItemGroup>
 
 	<ItemGroup>

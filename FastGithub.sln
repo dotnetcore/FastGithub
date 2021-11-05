@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31507.150
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31808.319
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub", "FastGithub\FastGithub.csproj", "{C1099390-6103-4917-A740-A3002B542FE0}"
 EndProject
@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.HttpServer", "Fa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.PacketIntercept", "FastGithub.PacketIntercept\FastGithub.PacketIntercept.csproj", "{701FF90C-E651-4E0B-AE7F-84D1F17DD178}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.WinForm", "FastGithub.WinForm\FastGithub.WinForm.csproj", "{0F67B40F-FF2C-4833-BDA3-2F05EE325990}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastGithub.UI", "FastGithub.UI\FastGithub.UI.csproj", "{5082061F-38D5-4F50-945E-791C85B9BDB5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.FlowAnalyze", "FastGithub.FlowAnalyze\FastGithub.FlowAnalyze.csproj", "{93478EAF-739C-47DA-B8FE-AEBA78A75E11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +49,14 @@ Global
 		{701FF90C-E651-4E0B-AE7F-84D1F17DD178}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{701FF90C-E651-4E0B-AE7F-84D1F17DD178}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{701FF90C-E651-4E0B-AE7F-84D1F17DD178}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F67B40F-FF2C-4833-BDA3-2F05EE325990}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F67B40F-FF2C-4833-BDA3-2F05EE325990}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F67B40F-FF2C-4833-BDA3-2F05EE325990}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F67B40F-FF2C-4833-BDA3-2F05EE325990}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5082061F-38D5-4F50-945E-791C85B9BDB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5082061F-38D5-4F50-945E-791C85B9BDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5082061F-38D5-4F50-945E-791C85B9BDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5082061F-38D5-4F50-945E-791C85B9BDB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93478EAF-739C-47DA-B8FE-AEBA78A75E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93478EAF-739C-47DA-B8FE-AEBA78A75E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93478EAF-739C-47DA-B8FE-AEBA78A75E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93478EAF-739C-47DA-B8FE-AEBA78A75E11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

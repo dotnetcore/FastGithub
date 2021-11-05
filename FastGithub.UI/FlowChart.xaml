@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="FastGithub.UI.FlowChart"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".7*"></ColumnDefinition>
+            <ColumnDefinition Width=".3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="flowChart" Series="{Binding Series}" LegendLocation="None" >
+            <lvc:CartesianChart.AxisY>
+                <lvc:Axis Foreground="#222"  MinValue="0" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+            </lvc:CartesianChart.AxisY>
+            <lvc:CartesianChart.AxisX>
+                <lvc:Axis Foreground="#222" Labels="{Binding Labels}"></lvc:Axis>
+            </lvc:CartesianChart.AxisX>
+        </lvc:CartesianChart>
+        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"  VerticalAlignment="Top">
+            <TextBlock FontSize="12" FontWeight="Light" Foreground="DodgerBlue" HorizontalAlignment="Center" Margin="0 5">上行流量</TextBlock>
+            <TextBlock x:Name="textBlockRead" Text="0B" Foreground="DodgerBlue" HorizontalAlignment="Center" Margin="0 0 0 8"/>
+
+            <TextBlock FontSize="12" FontWeight="Light" Foreground="IndianRed" HorizontalAlignment="Center" Margin="0 5">下行流量</TextBlock>
+            <TextBlock x:Name="textBlockWrite" Text="0B" Foreground="IndianRed" HorizontalAlignment="Center" Margin="0 0 0 8"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -56,7 +56,11 @@ namespace FastGithub
         public static void ListenSshReverseProxy(this KestrelServerOptions kestrel)
         {
             var sshPort = ReverseProxyPort.Ssh;
-            kestrel.Listen(IPAddress.Loopback, sshPort, listen => listen.UseConnectionHandler<SshReverseProxyHandler>());
+            kestrel.Listen(IPAddress.Loopback, sshPort, listen =>
+            {
+                listen.UseFlowAnalyze();
+                listen.UseConnectionHandler<SshReverseProxyHandler>();
+            });
 
             if (OperatingSystem.IsWindows())
             {
@@ -91,10 +95,17 @@ namespace FastGithub
             certService.InstallAndTrustCaCert();
 
             var httpsPort = ReverseProxyPort.Https;
-            kestrel.Listen(IPAddress.Loopback, httpsPort,
-                listen => listen.UseHttps(https =>
-                    https.ServerCertificateSelector = (ctx, domain) =>
-                        certService.GetOrCreateServerCert(domain)));
+            kestrel.Listen(IPAddress.Loopback, httpsPort, listen =>
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    listen.UseFlowAnalyze();
+                }
+                listen.UseHttps(https =>
+                {
+                    https.ServerCertificateSelector = (ctx, domain) => certService.GetOrCreateServerCert(domain);
+                });
+            });
 
             if (OperatingSystem.IsWindows())
             {

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading;
@@ -47,9 +48,14 @@ namespace FastGithub.PacketIntercept
                 var tasks = this.tcpInterceptors.Select(item => item.InterceptAsync(stoppingToken));
                 await Task.WhenAll(tasks);
             }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Win32Exception ex) when (ex.NativeErrorCode == 995)
+            {
+            }
             catch (Exception ex)
             {
-                stoppingToken.ThrowIfCancellationRequested();
                 this.logger.LogError(ex, "tcp拦截器异常");
                 await this.host.StopAsync(stoppingToken);
             }

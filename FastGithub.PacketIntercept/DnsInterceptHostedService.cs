@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,9 +78,14 @@ namespace FastGithub.PacketIntercept
             {
                 await this.dnsInterceptor.InterceptAsync(stoppingToken);
             }
-            catch (Exception ex)
+            catch (OperationCanceledException)
             {
-                stoppingToken.ThrowIfCancellationRequested();
+            }
+            catch (Win32Exception ex) when (ex.NativeErrorCode == 995)
+            {
+            }
+            catch (Exception ex)
+            { 
                 this.logger.LogError(ex, "dns拦截器异常");
                 await this.host.StopAsync(stoppingToken);
             }

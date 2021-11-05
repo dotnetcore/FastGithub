@@ -22,7 +22,7 @@ namespace FastGithub.PacketIntercept.Dns
     [SupportedOSPlatform("windows")]
     sealed class DnsInterceptor : IDnsInterceptor
     {
-        private const string DNS_FILTER = "ip and udp.DstPort == 53";
+        private const string DNS_FILTER = "udp.DstPort == 53";
 
         private readonly FastGithubConfig fastGithubConfig;
         private readonly ILogger<DnsInterceptor> logger;
@@ -129,7 +129,7 @@ namespace FastGithub.PacketIntercept.Dns
             }
 
             var question = request.Questions.First();
-            if (question.Type != RecordType.A)
+            if (question.Type != RecordType.A && question.Type != RecordType.AAAA)
             {
                 return;
             }
@@ -142,8 +142,11 @@ namespace FastGithub.PacketIntercept.Dns
 
             // dns响应数据
             var response = Response.FromRequest(request);
-            var record = new IPAddressResourceRecord(domain, IPAddress.Loopback, this.ttl);
-            response.AnswerRecords.Add(record);
+            if (question.Type == RecordType.A)
+            {
+                var record = new IPAddressResourceRecord(domain, IPAddress.Loopback, this.ttl);
+                response.AnswerRecords.Add(record);
+            }
             var responsePayload = response.ToArray();
 
             // 修改payload和包长 
@@ -151,10 +154,21 @@ namespace FastGithub.PacketIntercept.Dns
             packetLength = (uint)((int)packetLength + responsePayload.Length - requestPayload.Length);
 
             // 修改ip包
-            var destAddress = packet.IPv4Header->DstAddr;
-            packet.IPv4Header->DstAddr = packet.IPv4Header->SrcAddr;
-            packet.IPv4Header->SrcAddr = destAddress;
-            packet.IPv4Header->Length = (ushort)packetLength;
+            IPAddress destAddress;
+            if (packet.IPv4Header != null)
+            {
+                destAddress = packet.IPv4Header->DstAddr;
+                packet.IPv4Header->DstAddr = packet.IPv4Header->SrcAddr;
+                packet.IPv4Header->SrcAddr = destAddress;
+                packet.IPv4Header->Length = (ushort)packetLength;
+            }
+            else
+            {
+                destAddress = packet.IPv6Header->DstAddr;
+                packet.IPv6Header->DstAddr = packet.IPv6Header->SrcAddr;
+                packet.IPv6Header->SrcAddr = destAddress;
+                packet.IPv6Header->Length = (ushort)packetLength;
+            }
 
             // 修改udp包
             var destPort = packet.UdpHeader->DstPort;

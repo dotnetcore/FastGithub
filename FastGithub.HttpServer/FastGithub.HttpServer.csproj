@@ -1,16 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup> 
+	<PropertyGroup>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-		<PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
-		<PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-preview.12.21451.3" />
+		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+		<PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-rc.1.21520.4" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\FastGithub.FlowAnalyze\FastGithub.FlowAnalyze.csproj" />
 		<ProjectReference Include="..\FastGithub.Http\FastGithub.Http.csproj" />
 	</ItemGroup>
 

@@ -31,6 +31,18 @@ namespace FastGithub.DomainResolve
         }
 
         /// <summary>
+        /// 设置日志等级
+        /// </summary>
+        /// <param name="tomlPath"></param>
+        /// <param name="logLevel"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task SetlogLevelAsync(string tomlPath, int logLevel, CancellationToken cancellationToken)
+        {
+            return SetAsync(tomlPath, "log_level", new TomlInteger { Value = logLevel });
+        }
+
+        /// <summary>
         /// 设置ecs
         /// </summary>
         /// <param name="tomlPath"></param> 
