@@ -201,16 +201,16 @@ namespace FastGithub.DomainResolve
         private static async Task<IPAddress[]> OrderByConnectAnyAsync(IPAddress[] addresses, int port, CancellationToken cancellationToken)
         {
             var tasks = addresses.Select(address => ConnectAsync(address, port, cancellationToken));
-            var fastedAddress = await await Task.WhenAny(tasks);
-            if (fastedAddress == null)
+            var fastestAddress = await await Task.WhenAny(tasks);
+            if (fastestAddress == null)
             {
                 return addresses;
             }
 
-            var list = new List<IPAddress> { fastedAddress };
+            var list = new List<IPAddress> { fastestAddress };
             foreach (var address in addresses)
             {
-                if (address.Equals(fastedAddress) == false)
+                if (address.Equals(fastestAddress) == false)
                 {
                     list.Add(address);
                 }
