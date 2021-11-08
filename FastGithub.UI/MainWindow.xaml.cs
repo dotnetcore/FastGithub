@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -12,24 +12,26 @@ namespace FastGithub.UI
     public partial class MainWindow : Window
     {
         private readonly System.Windows.Forms.NotifyIcon notifyIcon;
-        private const string FAST_GITHUB = "FastGithub";
-        private const string PROJECT_URI = "https://github.com/dotnetcore/FastGithub";
+        private const string FASTGITHUB_UI = "FastGithub.UI";
+        private const string RELEASES_URI = "https://github.com/dotnetcore/FastGithub/releases";
 
         public MainWindow()
         {
             InitializeComponent();
 
-            var about = new System.Windows.Forms.MenuItem("关于(&A)");
-            about.Click += (s, e) => Process.Start(PROJECT_URI);
+            var upgrade = new System.Windows.Forms.MenuItem("检测更新(&U)");
+            upgrade.Click += (s, e) => Process.Start(RELEASES_URI);
 
-            var exit = new System.Windows.Forms.MenuItem("退出(&C)");
+            var exit = new System.Windows.Forms.MenuItem("关闭应用(&C)");
             exit.Click += (s, e) => this.Close();
 
+            var version = this.GetType().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            this.Title = $"{FASTGITHUB_UI} v{version}";
             this.notifyIcon = new System.Windows.Forms.NotifyIcon
             {
                 Visible = true,
-                Text = FAST_GITHUB,
-                ContextMenu = new System.Windows.Forms.ContextMenu(new[] { about, exit }),
+                Text = FASTGITHUB_UI,
+                ContextMenu = new System.Windows.Forms.ContextMenu(new[] { upgrade, exit }),
                 Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath)
             };
 
@@ -42,15 +44,8 @@ namespace FastGithub.UI
                     this.WindowState = WindowState.Normal;
                 }
             };
+        }
 
-            var fileName = $"{FAST_GITHUB}.exe";
-            if (File.Exists(fileName) == true)
-            {
-                var version = FileVersionInfo.GetVersionInfo(fileName);
-                this.Title = $"{FAST_GITHUB} v{version.ProductVersion}";
-            } 
-        } 
-        
 
         /// <summary>
         /// 拦截最小化事件

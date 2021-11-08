@@ -377,6 +377,8 @@ code {
 <h4 id="21-windows-x64">2.1 windows-x64</h4>
 <ul>
 <li>双击运行FastGithub.UI.exe</li>
+<li><code>fastgithub.exe start</code> // 以windows服务安装并启动</li>
+<li><code>fastgithub.exe stop</code> // 以windows服务卸载并删除</li>
 </ul>
 <h4 id="22-linux-x64">2.2 linux-x64</h4>
 <ul>
@@ -391,27 +393,13 @@ code {
 <li>设置系统自动代理为<code>http://127.0.0.1:38457</code>，或手动代理http/https为<code>127.0.0.1:38457</code></li>
 <li><a href="https://github.com/dotnetcore/FastGithub/blob/master/MacOSXConfig.md">具体配置详情</a></li>
 </ul>
-<h3 id="3-%E5%8A%A0%E9%80%9F%E5%8E%9F%E7%90%86">3 加速原理</h3>
-<h4 id="31-windows">3.1 windows</h4>
-<ol>
-<li>客户端访问<code>https://github.com</code></li>
-<li>客户端向dns查询github.com的ip，FastGithub拦截dns数据包并伪造解析结果为127.0.0.1</li>
-<li>客户端请求到FastGithub的<code>https://127.0.0.1:443</code></li>
-<li>FastGithub使用fastgithub.cer颁发服务器证书给客户端</li>
-<li>FastGithub查询和计算github.com最快的ip</li>
-<li>FastGithub与github.com进行无sni的tls连接</li>
-<li>FastGithub将请求反向代理到<code>https://github.com</code></li>
-</ol>
-<h4 id="32-linuxosx">3.2 linux/osx</h4>
-<ol>
-<li>客户端访问<code>https://github.com</code></li>
-<li>客户端使用fagithub的代理端口38457代理请求</li>
-<li>FastGithub将代理的流量请求到自身的反向代理服务</li>
-<li>FastGithub使用fastgithub.cer颁发服务器证书给客户端</li>
-<li>FastGithub查询和计算github.com最快的ip</li>
-<li>FastGithub与github.com进行无sni的tls连接</li>
-<li>FastGithub将请求反向代理到<code>https://github.com</code></li>
-</ol>
+<h3 id="3-%E8%BD%AF%E4%BB%B6%E5%8A%9F%E8%83%BD">3 软件功能</h3>
+<ul>
+<li>提供域名的纯净IP解析；</li>
+<li>提供IP测速并选择最快的IP；</li>
+<li>提供域名的tls连接自定义配置；</li>
+<li>google的CDN资源替换，解决大量国外网站无法加载js和css的问题；</li>
+</ul>
 <h3 id="4-%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81">4 证书验证</h3>
 <h4 id="41-git">4.1 git</h4>
 <p>git操作提示<code>SSL certificate problem</code></br>

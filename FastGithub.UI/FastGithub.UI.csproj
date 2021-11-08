@@ -4,8 +4,7 @@
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputType>WinExe</OutputType>
-		<LangVersion>8.0</LangVersion>
-		<Nullable>enable</Nullable>
+		<LangVersion>8.0</LangVersion> 
 		<TargetFramework>net45</TargetFramework>
 		<ApplicationIcon>app.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -17,15 +16,7 @@
 	<ItemGroup>
 		<None Remove="Resource\*.*" />
 		<Resource Include="Resource\*.*" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Remove="App.xaml.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Remove="App.xaml" />
-	</ItemGroup>
+	</ItemGroup> 
 
 	<ItemGroup>
 		<Reference Include="System.Net.Http" />

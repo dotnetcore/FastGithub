@@ -10,21 +10,25 @@ namespace FastGithub.UI
 {
     class Program
     {
+        private const string MUTEX_NAME = "Global\\FastGithub.UI";
+        private const string MAIN_WINDOWS = "MainWindow.xaml";
+        private const string FASTGITHUB_PATH = "fastgithub.exe";
+
         [STAThread]
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
-            using var mutex = new Mutex(true, "Global\\FastGithub.UI", out var isFirstInstance);
+            using var mutex = new Mutex(true, MUTEX_NAME, out var isFirstInstance);
             if (isFirstInstance == false)
             {
                 return;
             }
 
             StartFastGithub();
-            SetWebBrowserVersion(9000);
+            SetWebBrowserVersion();
 
             var app = new Application();
-            app.StartupUri = new Uri("MainWindow.xaml", UriKind.Relative);
+            app.StartupUri = new Uri(MAIN_WINDOWS, UriKind.Relative);
             app.Run();
         }
 
@@ -51,12 +55,18 @@ namespace FastGithub.UI
         /// <summary>
         /// 设置浏览器版本
         /// </summary>
-        /// <param name="version"></param>
-        private static void SetWebBrowserVersion(int version)
+        private static void SetWebBrowserVersion()
         {
-            var registry = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true);
-            var key = $"{Process.GetCurrentProcess().ProcessName}.exe";
-            registry.SetValue(key, version, RegistryValueKind.DWord);
+            const string subKey = @"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
+            var registryKey = Registry.CurrentUser.OpenSubKey(subKey, true);
+            if (registryKey == null)
+            {
+                registryKey = Registry.CurrentUser.CreateSubKey(subKey);
+            }
+            var name = $"{Process.GetCurrentProcess().ProcessName}.exe";
+            using var webBrowser = new System.Windows.Forms.WebBrowser();
+            var value = int.Parse($"{webBrowser.Version.Major}000");
+            registryKey.SetValue(name, value, RegistryValueKind.DWord);
         }
 
         /// <summary>
@@ -64,16 +74,15 @@ namespace FastGithub.UI
         /// </summary>
         /// <returns></returns>
         private static void StartFastGithub()
-        {
-            const string fileName = "fastgithub.exe";
-            if (File.Exists(fileName) == false)
+        { 
+            if (File.Exists(FASTGITHUB_PATH) == false)
             {
                 return;
             }
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = fileName,
+                FileName = FASTGITHUB_PATH,
                 Arguments = $"ParentProcessId={Process.GetCurrentProcess().Id} UdpLoggerPort={UdpLogger.Port}",
                 UseShellExecute = false,
                 CreateNoWindow = true

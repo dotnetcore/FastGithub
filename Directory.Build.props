@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<Version>2.0.5</Version>	
+		<Version>2.0.6</Version>	
 		<Nullable>enable</Nullable>
 		<TargetFramework>net6.0</TargetFramework>	
 		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>

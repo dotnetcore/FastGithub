@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31808.319
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31320.298
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub", "FastGithub\FastGithub.csproj", "{C1099390-6103-4917-A740-A3002B542FE0}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.HttpServer", "Fa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.PacketIntercept", "FastGithub.PacketIntercept\FastGithub.PacketIntercept.csproj", "{701FF90C-E651-4E0B-AE7F-84D1F17DD178}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastGithub.UI", "FastGithub.UI\FastGithub.UI.csproj", "{5082061F-38D5-4F50-945E-791C85B9BDB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.UI", "FastGithub.UI\FastGithub.UI.csproj", "{5082061F-38D5-4F50-945E-791C85B9BDB5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastGithub.FlowAnalyze", "FastGithub.FlowAnalyze\FastGithub.FlowAnalyze.csproj", "{93478EAF-739C-47DA-B8FE-AEBA78A75E11}"
 EndProject

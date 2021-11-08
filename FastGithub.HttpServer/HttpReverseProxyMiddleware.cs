@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Threading.Tasks;
 using Yarp.ReverseProxy.Forwarder;
 
@@ -14,18 +15,12 @@ namespace FastGithub.HttpServer
     /// </summary>
     sealed class HttpReverseProxyMiddleware
     {
-        private const string LOOPBACK = "127.0.0.1";
-        private const string LOCALHOST = "localhost";
-        private const int HTTP_PORT = 80;
-        private const int HTTPS_PORT = 443;
-
         private static readonly DomainConfig defaultDomainConfig = new() { TlsSni = true };
 
         private readonly IHttpForwarder httpForwarder;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly FastGithubConfig fastGithubConfig;
         private readonly ILogger<HttpReverseProxyMiddleware> logger;
-
 
         public HttpReverseProxyMiddleware(
             IHttpForwarder httpForwarder,
@@ -84,20 +79,21 @@ namespace FastGithub.HttpServer
                 return true;
             }
 
-            // http(s)://127.0.0.1
-            // http(s)://localhost
-            if (host.Host == LOOPBACK || host.Host == LOCALHOST)
+            // 未配置的域名，但仍然被解析到本机ip的域名
+            if (OperatingSystem.IsWindows() && IsDomain(host.Host))
             {
-                if (host.Port == null || host.Port == HTTPS_PORT || host.Port == HTTP_PORT)
-                {
-                    return false;
-                }
+                this.logger.LogWarning($"域名{host.Host}可能已经被DNS污染");
+                domainConfig = defaultDomainConfig;
+                return true;
             }
 
-            // 未配置的域名，但dns污染解析为127.0.0.1的域名
-            this.logger.LogWarning($"检测到{host.Host}可能遭遇了dns污染");
-            domainConfig = defaultDomainConfig;
-            return true;
+            return false;
+
+            // 是否为域名
+            static bool IsDomain(string host)
+            {
+                return IPAddress.TryParse(host, out _) == false && host.Contains('.');
+            }
         }
 
         /// <summary>

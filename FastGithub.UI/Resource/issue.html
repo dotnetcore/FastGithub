@@ -79,9 +79,9 @@
         for (var i = 0; i < codes.length; i++) {
             var code = codes[i];
             code.setAttribute('title', '点击复制');
-            code.addEventListener("click", function () {
+            code.onclick = function () {
                 window.clipboardData.setData("Text", this.outerText);
-            });
+            }
         }
     </script>
 </body>

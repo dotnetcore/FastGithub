@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
 	<ItemGroup>
+		<PackageReference Include="PInvoke.AdvApi32" Version="0.7.104" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
 		<PackageReference Include="DNS" Version="6.1.0" />

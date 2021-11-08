@@ -9,6 +9,8 @@ github加速神器，解决github打不开、用户头像无法加载、releases
 ### 2 部署方式
 #### 2.1 windows-x64
 * 双击运行FastGithub.UI.exe
+* `fastgithub.exe start` // 以windows服务安装并启动
+* `fastgithub.exe stop` // 以windows服务卸载并删除
 
 #### 2.2 linux-x64
 * 执行`./fastgithub`
@@ -21,24 +23,11 @@ github加速神器，解决github打不开、用户头像无法加载、releases
 * 设置系统自动代理为`http://127.0.0.1:38457`，或手动代理http/https为`127.0.0.1:38457`
 * [具体配置详情](https://github.com/dotnetcore/FastGithub/blob/master/MacOSXConfig.md)
 
-### 3 加速原理
-#### 3.1 windows
-1. 客户端访问`https://github.com`
-2. 客户端向dns查询github.com的ip，FastGithub拦截dns数据包并伪造解析结果为127.0.0.1
-3. 客户端请求到FastGithub的`https://127.0.0.1:443`
-4. FastGithub使用fastgithub.cer颁发服务器证书给客户端
-5. FastGithub查询和计算github.com最快的ip
-6. FastGithub与github.com进行无sni的tls连接
-7. FastGithub将请求反向代理到`https://github.com`
-
-#### 3.2 linux/osx
-1. 客户端访问`https://github.com`
-2. 客户端使用fagithub的代理端口38457代理请求
-3. FastGithub将代理的流量请求到自身的反向代理服务
-4. FastGithub使用fastgithub.cer颁发服务器证书给客户端
-5. FastGithub查询和计算github.com最快的ip
-6. FastGithub与github.com进行无sni的tls连接
-7. FastGithub将请求反向代理到`https://github.com`
+### 3 软件功能 
+* 提供域名的纯净IP解析；
+* 提供IP测速并选择最快的IP；
+* 提供域名的tls连接自定义配置；
+* google的CDN资源替换，解决大量国外网站无法加载js和css的问题；
   
 ### 4 证书验证
 #### 4.1 git

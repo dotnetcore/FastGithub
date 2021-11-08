@@ -10,6 +10,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using static PInvoke.AdvApi32;
 
 namespace FastGithub.DomainResolve
 {
@@ -18,10 +19,11 @@ namespace FastGithub.DomainResolve
     /// </summary>
     sealed class DnscryptProxy
     {
-        private const string PATH = "dnscrypt-proxy";
-        private const string NAME = "dnscrypt-proxy";
-
         private readonly ILogger<DnscryptProxy> logger;
+        private readonly string processName;
+        private readonly string serviceName;
+        private readonly string exeFilePath;
+        private readonly string tomlFilePath;
 
         /// <summary>
         /// 相关进程
@@ -39,7 +41,14 @@ namespace FastGithub.DomainResolve
         /// <param name="logger"></param>
         public DnscryptProxy(ILogger<DnscryptProxy> logger)
         {
+            const string PATH = "dnscrypt-proxy";
+            const string NAME = "dnscrypt-proxy";
+
             this.logger = logger;
+            this.processName = NAME;
+            this.serviceName = $"{nameof(FastGithub)}.{NAME}";
+            this.exeFilePath = Path.Combine(PATH, OperatingSystem.IsWindows() ? $"{NAME}.exe" : NAME);
+            this.tomlFilePath = Path.Combine(PATH, $"{NAME}.toml");
         }
 
         /// <summary>
@@ -55,7 +64,7 @@ namespace FastGithub.DomainResolve
             }
             catch (Exception ex)
             {
-                this.logger.LogWarning($"{NAME}启动失败：{ex.Message}");
+                this.logger.LogWarning($"{this.processName}启动失败：{ex.Message}");
             }
         }
 
@@ -66,30 +75,22 @@ namespace FastGithub.DomainResolve
         /// <returns></returns>
         private async Task StartCoreAsync(CancellationToken cancellationToken)
         {
-            var tomlPath = Path.Combine(PATH, $"{NAME}.toml");
             var port = GetAvailablePort(IPAddress.Loopback.AddressFamily);
             var localEndPoint = new IPEndPoint(IPAddress.Loopback, port);
 
-            await TomlUtil.SetListensAsync(tomlPath, localEndPoint, cancellationToken);
-            await TomlUtil.SetlogLevelAsync(tomlPath, 6, cancellationToken);
-            await TomlUtil.SetEdnsClientSubnetAsync(tomlPath, cancellationToken);
-
-            foreach (var process in Process.GetProcessesByName(NAME))
-            {
-                process.Kill();
-                process.WaitForExit();
-            }
+            await TomlUtil.SetListensAsync(this.tomlFilePath, localEndPoint, cancellationToken);
+            await TomlUtil.SetlogLevelAsync(this.tomlFilePath, 6, cancellationToken);
+            await TomlUtil.SetEdnsClientSubnetAsync(this.tomlFilePath, cancellationToken);
 
             if (OperatingSystem.IsWindows() && Process.GetCurrentProcess().SessionId == 0)
             {
-                StartDnscryptProxy("-service uninstall")?.WaitForExit();
-                StartDnscryptProxy("-service install")?.WaitForExit();
-                StartDnscryptProxy("-service start")?.WaitForExit();
-                this.process = Process.GetProcessesByName(NAME).FirstOrDefault(item => item.SessionId == 0);
+                ServiceInstallUtil.StopAndDeleteService(this.serviceName);
+                ServiceInstallUtil.InstallAndStartService(this.serviceName, this.exeFilePath, ServiceStartType.SERVICE_DEMAND_START);
+                this.process = Process.GetProcessesByName(this.processName).FirstOrDefault(item => item.SessionId == 0);
             }
             else
             {
-                this.process = StartDnscryptProxy(string.Empty);
+                this.process = StartDnscryptProxy();
             }
 
             if (this.process != null)
@@ -109,9 +110,9 @@ namespace FastGithub.DomainResolve
             {
                 if (OperatingSystem.IsWindows() && Process.GetCurrentProcess().SessionId == 0)
                 {
-                    StartDnscryptProxy("-service stop")?.WaitForExit();
-                    StartDnscryptProxy("-service uninstall")?.WaitForExit();
+                    ServiceInstallUtil.StopAndDeleteService(this.serviceName);
                 }
+
                 if (this.process != null && this.process.HasExited == false)
                 {
                     this.process.Kill();
@@ -119,7 +120,7 @@ namespace FastGithub.DomainResolve
             }
             catch (Exception ex)
             {
-                this.logger.LogWarning($"{NAME}停止失败：{ex.Message }");
+                this.logger.LogWarning($"{this.processName}停止失败：{ex.Message }");
             }
             finally
             {
@@ -160,16 +161,14 @@ namespace FastGithub.DomainResolve
 
         /// <summary>
         /// 启动DnscryptProxy进程
-        /// </summary>
-        /// <param name="arguments"></param> 
-        private static Process? StartDnscryptProxy(string arguments)
+        /// </summary> 
+        /// <returns></returns>
+        private Process? StartDnscryptProxy()
         {
-            var fileName = OperatingSystem.IsWindows() ? $"{NAME}.exe" : NAME;
             return Process.Start(new ProcessStartInfo
             {
-                FileName = Path.Combine(PATH, fileName),
-                Arguments = arguments,
-                WorkingDirectory = PATH,
+                FileName = this.exeFilePath,
+                WorkingDirectory = Path.GetDirectoryName(this.exeFilePath),
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden
@@ -182,7 +181,7 @@ namespace FastGithub.DomainResolve
         /// <returns></returns>
         public override string ToString()
         {
-            return NAME;
+            return this.processName;
         }
     }
 }

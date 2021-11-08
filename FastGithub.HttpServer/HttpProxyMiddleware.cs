@@ -105,10 +105,10 @@ namespace FastGithub.HttpServer
             }
             else
             {
-                await this.httpReverseProxy.InvokeAsync(context, async ctx =>
+                await this.httpReverseProxy.InvokeAsync(context, async next =>
                 {
-                    var destinationPrefix = $"{ctx.Request.Scheme}://{ctx.Request.Host}";
-                    await this.httpForwarder.SendAsync(ctx, destinationPrefix, this.defaultHttpClient);
+                    var destinationPrefix = $"{context.Request.Scheme}://{context.Request.Host}";
+                    await this.httpForwarder.SendAsync(context, destinationPrefix, this.defaultHttpClient);
                 });
             }
         }
