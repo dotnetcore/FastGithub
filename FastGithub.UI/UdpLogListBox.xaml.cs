@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 
 namespace FastGithub.UI
@@ -8,6 +9,7 @@ namespace FastGithub.UI
     /// </summary>
     public partial class UdpLogListBox : UserControl
     {
+        private readonly int maxLogCount = 100;
         public ObservableCollection<UdpLog> LogList { get; } = new ObservableCollection<UdpLog>();
 
         public UdpLogListBox()
@@ -19,16 +21,26 @@ namespace FastGithub.UI
         }
 
         private async void InitUdpLoggerAsync()
-        { 
+        {
             while (this.Dispatcher.HasShutdownStarted == false)
             {
-                var log = await UdpLogger.GetUdpLogAsync();
-                if (log != null)
+                try
                 {
-                    this.LogList.Add(log);
+                    var log = await UdpLogger.GetUdpLogAsync();
+                    if (log != null)
+                    {
+                        this.LogList.Insert(0, log);
+                        if (this.LogList.Count > this.maxLogCount)
+                        {
+                            this.LogList.RemoveAt(this.maxLogCount);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
                 }
             }
-        } 
+        }
 
         private void MenuItem_Copy_Click(object sender, System.Windows.RoutedEventArgs e)
         {

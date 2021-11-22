@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
-		<PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
+		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
 		<ProjectReference Include="..\FastGithub.DomainResolve\FastGithub.DomainResolve.csproj" />
 	</ItemGroup>
 

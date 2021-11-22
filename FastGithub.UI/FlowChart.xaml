@@ -15,13 +15,18 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="flowChart" Series="{Binding Series}" LegendLocation="None" >
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis Foreground="#222"  MinValue="0" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis Foreground="#222" Labels="{Binding Labels}"></lvc:Axis>
+        <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="flowChart" Series="{Binding Series}" LegendLocation="None" AnimationsSpeed="0:0:1" >
+
+            <lvc:CartesianChart.AxisX >
+                <lvc:Axis Foreground="#222" Unit="1000" LabelFormatter="{Binding XFormatter}">
+                </lvc:Axis>
             </lvc:CartesianChart.AxisX>
+
+            <lvc:CartesianChart.AxisY>
+                <lvc:Axis Foreground="#222" MinValue="0" LabelFormatter="{Binding YFormatter}">
+                </lvc:Axis>
+            </lvc:CartesianChart.AxisY>
+
         </lvc:CartesianChart>
         <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"  VerticalAlignment="Top">
             <TextBlock FontSize="12" FontWeight="Light" Foreground="DodgerBlue" HorizontalAlignment="Center" Margin="0 5">上行流量</TextBlock>

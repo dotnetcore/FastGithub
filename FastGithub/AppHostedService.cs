@@ -112,13 +112,13 @@ namespace FastGithub
 
             if (IPAddress.TryParse(proxyServer.Host, out var address))
             {
-                return address.Equals(IPAddress.Loopback);
+                return IPAddress.IsLoopback(address);
             }
 
             try
             {
                 var addresses = await Dns.GetHostAddressesAsync(proxyServer.Host);
-                return addresses.Contains(IPAddress.Loopback);
+                return addresses.Any(item => IPAddress.IsLoopback(item));
             }
             catch (Exception)
             {
@@ -149,6 +149,7 @@ namespace FastGithub
             }
             finally
             {
+                this.logger.LogInformation($"正在主动关闭，因为父进程已退出");
                 await this.host.StopAsync(cancellationToken);
             }
         }

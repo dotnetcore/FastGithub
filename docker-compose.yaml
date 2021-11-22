@@ -1,0 +1,34 @@
+version: "3.7"
+services:
+  fastgithub:
+    image: slcnx/fastgithub
+    network_mode: host
+    restart: always
+    volumes:
+    - cacert:/fastgithub/cacert/
+  sample:
+    depends_on:
+    - fastgithub
+    image: slcnx/ubuntu:18.04
+    volumes:
+    - cacert:/tmp/cacert
+    - build_data:/build_data
+    working_dir: /build_data
+    restart: on-failure
+    tty: true
+    entrypoint: sh -c 'cp /tmp/cacert/fastgithub.cer /usr/local/share/ca-certificates/fastgithub.crt && update-ca-certificates && git clone https://github.com/kubernetes/kubernetes.git'
+    command: ""
+    environment:
+      https_proxy: http://127.0.0.1:38457
+      http_proxy: http://127.0.0.1:38457
+    network_mode: host
+  build:
+    working_dir: /build_data
+    depends_on:
+    - sample
+    image: nginx
+    volumes:
+    - build_data:/build_data
+volumes:
+  cacert: {}
+  build_data: {}

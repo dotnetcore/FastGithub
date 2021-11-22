@@ -7,7 +7,7 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
-		<PackageReference Include="Yarp.ReverseProxy" Version="1.0.0-rc.1.21520.4" />
+		<PackageReference Include="Yarp.ReverseProxy" Version="1.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

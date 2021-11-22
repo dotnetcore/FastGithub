@@ -41,6 +41,8 @@ namespace FastGithub.DomainResolve
             try
             {
                 await this.dnscryptProxy.StartAsync(stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(5d), stoppingToken);
+
                 while (stoppingToken.IsCancellationRequested == false)
                 {
                     await this.domainResolver.TestAllEndPointsAsync(stoppingToken);

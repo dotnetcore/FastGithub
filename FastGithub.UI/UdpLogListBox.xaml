@@ -10,6 +10,7 @@
         <ListBox 
             x:Name="listBox" 
             ItemsSource="{Binding LogList}"
+            FocusVisualStyle="{x:Null}"
             VirtualizingPanel.IsVirtualizing="True"
             ScrollViewer.CanContentScroll="True"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" 

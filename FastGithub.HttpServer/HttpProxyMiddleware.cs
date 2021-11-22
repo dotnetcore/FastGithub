@@ -20,7 +20,6 @@ namespace FastGithub.HttpServer
     /// </summary>
     sealed class HttpProxyMiddleware
     {
-        private const string LOOPBACK = "127.0.0.1";
         private const string LOCALHOST = "localhost";
         private const int HTTP_PORT = 80;
         private const int HTTPS_PORT = 443;
@@ -120,7 +119,17 @@ namespace FastGithub.HttpServer
         /// <returns></returns>
         private bool IsFastGithubServer(HostString host)
         {
-            return host.Port == this.fastGithubConfig.HttpProxyPort && (host.Host == LOOPBACK || host.Host == LOCALHOST);
+            if (host.Port != this.fastGithubConfig.HttpProxyPort)
+            {
+                return false;
+            }
+
+            if (host.Host == LOCALHOST)
+            {
+                return true;
+            }
+
+            return IPAddress.TryParse(host.Host, out var address) && IPAddress.IsLoopback(address);
         }
 
         /// <summary>

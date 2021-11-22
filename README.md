@@ -7,22 +7,33 @@ github加速神器，解决github打不开、用户头像无法加载、releases
 * Q群2 [742376932](https://qm.qq.com/cgi-bin/qm/qr?k=6BBJ1nrJwe1o1E4-NJfwSOP-C4sMGc4q&jump_from=webapi)
   
 ### 2 部署方式
-#### 2.1 windows-x64
-* 双击运行FastGithub.UI.exe
+#### 2.1 windows-x64桌面
+* 双击运行FastGithub.UI.exe 
+
+#### 2.2 windows-x64服务 
 * `fastgithub.exe start` // 以windows服务安装并启动
 * `fastgithub.exe stop` // 以windows服务卸载并删除
 
-#### 2.2 linux-x64
-* 执行`./fastgithub`
-* 安装cacert/fastgithub.cer到受信任的根证书颁发机构
+#### 2.3 linux-x64终端
+* `sudo ./fastgithub`
+* 设置系统自动代理为`http://127.0.0.1:38457`，或手动代理http/https为`127.0.0.1:38457`
+  
+#### 2.4 linux-x64服务
+* `sudo ./fastgithub start` // 以systemd服务安装并启动
+* `sudo ./fastgithub stop` // 以systemd服务卸载并删除
 * 设置系统自动代理为`http://127.0.0.1:38457`，或手动代理http/https为`127.0.0.1:38457`
 
-#### 2.3 macOS-x64
+#### 2.5 macOS-x64
 * 双击运行fastgithub
 * 安装cacert/fastgithub.cer并设置信任
 * 设置系统自动代理为`http://127.0.0.1:38457`，或手动代理http/https为`127.0.0.1:38457`
 * [具体配置详情](https://github.com/dotnetcore/FastGithub/blob/master/MacOSXConfig.md)
-
+ 
+#### 2.6 docker-compose一键部署
+* 准备好docker 18.09, docker-compose.
+* 在源码目录下，有一个docker-compose.yaml 文件，专用于在实际项目中，临时使用github.com源码，而做的demo配置。
+* 根据自己的需要更新docker-compose.yaml中的sample和build镜像即可完成拉github.com源码加速，并基于源码做后续的操作。
+ 
 ### 3 软件功能 
 * 提供域名的纯净IP解析；
 * 提供IP测速并选择最快的IP；

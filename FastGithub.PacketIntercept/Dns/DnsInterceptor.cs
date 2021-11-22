@@ -27,7 +27,7 @@ namespace FastGithub.PacketIntercept.Dns
         private readonly FastGithubConfig fastGithubConfig;
         private readonly ILogger<DnsInterceptor> logger;
 
-        private readonly TimeSpan ttl = TimeSpan.FromMinutes(1d);
+        private readonly TimeSpan ttl = TimeSpan.FromMinutes(5d);
 
         /// <summary>
         /// 刷新DNS缓存
@@ -142,11 +142,9 @@ namespace FastGithub.PacketIntercept.Dns
 
             // dns响应数据
             var response = Response.FromRequest(request);
-            if (question.Type == RecordType.A)
-            {
-                var record = new IPAddressResourceRecord(domain, IPAddress.Loopback, this.ttl);
-                response.AnswerRecords.Add(record);
-            }
+            var loopback = question.Type == RecordType.A ? IPAddress.Loopback : IPAddress.IPv6Loopback;
+            var record = new IPAddressResourceRecord(domain, loopback, this.ttl);
+            response.AnswerRecords.Add(record);
             var responsePayload = response.ToArray();
 
             // 修改payload和包长 
@@ -167,7 +165,7 @@ namespace FastGithub.PacketIntercept.Dns
                 destAddress = packet.IPv6Header->DstAddr;
                 packet.IPv6Header->DstAddr = packet.IPv6Header->SrcAddr;
                 packet.IPv6Header->SrcAddr = destAddress;
-                packet.IPv6Header->Length = (ushort)packetLength;
+                packet.IPv6Header->Length = (ushort)(packetLength - sizeof(IPv6Header));
             }
 
             // 修改udp包
@@ -182,7 +180,7 @@ namespace FastGithub.PacketIntercept.Dns
                 : WinDivertDirection.Inbound;
 
             WinDivert.WinDivertHelperCalcChecksums(winDivertBuffer, packetLength, ref winDivertAddress, WinDivertChecksumHelperParam.All);
-            this.logger.LogInformation($"已拦截向dns://{destAddress}:{destPort}查询{domain}");
+            this.logger.LogInformation($"{domain}->{loopback}");
         }
 
 

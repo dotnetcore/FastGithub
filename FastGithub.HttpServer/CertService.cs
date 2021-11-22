@@ -18,13 +18,14 @@ namespace FastGithub.HttpServer
         private const string CACERT_PATH = "cacert";
         private const int KEY_SIZE_BITS = 2048;
         private readonly IMemoryCache serverCertCache;
+        private readonly IEnumerable<ICaCertInstaller> certInstallers;
         private readonly ILogger<CertService> logger;
 
 
         /// <summary>
         /// 获取证书文件路径
         /// </summary>
-        public string CaCerFilePath { get; } = $"{CACERT_PATH}/fastgithub.cer";
+        public string CaCerFilePath { get; } = OperatingSystem.IsLinux() ? $"{CACERT_PATH}/fastgithub.crt" : $"{CACERT_PATH}/fastgithub.cer";
 
         /// <summary>
         /// 获取私钥文件路径
@@ -34,12 +35,16 @@ namespace FastGithub.HttpServer
         /// <summary>
         /// 证书服务
         /// </summary>
+        /// <param name="serverCertCache"></param>
+        /// <param name="certInstallers"></param>
         /// <param name="logger"></param>
         public CertService(
             IMemoryCache serverCertCache,
+            IEnumerable<ICaCertInstaller> certInstallers,
             ILogger<CertService> logger)
         {
             this.serverCertCache = serverCertCache;
+            this.certInstallers = certInstallers;
             this.logger = logger;
             Directory.CreateDirectory(CACERT_PATH);
         }
@@ -68,17 +73,10 @@ namespace FastGithub.HttpServer
         /// </summary> 
         public void InstallAndTrustCaCert()
         {
-            if (OperatingSystem.IsWindows())
+            var installer = this.certInstallers.FirstOrDefault(item => item.IsSupported());
+            if (installer != null)
             {
-                this.InstallAndTrustCaCertAtWindows();
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                this.logger.LogWarning($"请根据具体linux发行版手动安装CA证书{this.CaCerFilePath}");
-            }
-            else if (OperatingSystem.IsMacOS())
-            {
-                this.logger.LogWarning($"请手动安装CA证书然后设置信任CA证书{this.CaCerFilePath}");
+                installer.Install(this.CaCerFilePath);
             }
             else
             {
@@ -112,38 +110,6 @@ namespace FastGithub.HttpServer
                 return false;
             }
         }
-
-        /// <summary>
-        /// 安装CA证书
-        /// </summary> 
-        private void InstallAndTrustCaCertAtWindows()
-        {
-            try
-            {
-                using var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
-                store.Open(OpenFlags.ReadWrite);
-
-                var caCert = new X509Certificate2(this.CaCerFilePath);
-                var subjectName = caCert.Subject[3..];
-                foreach (var item in store.Certificates.Find(X509FindType.FindBySubjectName, subjectName, false))
-                {
-                    if (item.Thumbprint != caCert.Thumbprint)
-                    {
-                        store.Remove(item);
-                    }
-                }
-                if (store.Certificates.Find(X509FindType.FindByThumbprint, caCert.Thumbprint, true).Count == 0)
-                {
-                    store.Add(caCert);
-                }
-                store.Close();
-            }
-            catch (Exception)
-            {
-                this.logger.LogWarning($"请手动安装CA证书{this.CaCerFilePath}到“将所有的证书都放入下列存储”\\“受信任的根证书颁发机构”");
-            }
-        }
-
 
         /// <summary>
         /// 获取颁发给指定域名的证书
@@ -182,6 +148,7 @@ namespace FastGithub.HttpServer
 
             yield return Environment.MachineName;
             yield return IPAddress.Loopback.ToString();
+            yield return IPAddress.IPv6Loopback.ToString();
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 
 namespace FastGithub.Configuration
 {
@@ -14,46 +13,64 @@ namespace FastGithub.Configuration
         /// <summary>
         /// ssh端口
         /// </summary>
-        public static int Ssh { get; } = OperatingSystem.IsWindows() ? GetAvailableTcpPort(22) : GetAvailableTcpPort(3822);
+        public static int Ssh { get; }
 
         /// <summary>
         /// http端口
         /// </summary>
-        public static int Http { get; } = OperatingSystem.IsWindows() ? GetAvailableTcpPort(80) : GetAvailableTcpPort(3880);
+        public static int Http { get; }
 
         /// <summary>
         /// https端口
         /// </summary>
-        public static int Https { get; } = OperatingSystem.IsWindows() ? GetAvailableTcpPort(443) : GetAvailableTcpPort(38443);
+        public static int Https { get; }
 
         /// <summary>
-        /// 获取可用的随机Tcp端口
+        /// 反向代理端口
         /// </summary>
-        /// <param name="minValue"></param>
-        /// <param name="addressFamily"></param>
-        /// <returns></returns>
-        private static int GetAvailableTcpPort(int minValue, AddressFamily addressFamily = AddressFamily.InterNetwork)
+        static ReverseProxyPort()
         {
-            var hashSet = new HashSet<int>();
-            var tcpListeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
+            var ports = new TcpListenerPortCollection();
+            Ssh = OperatingSystem.IsWindows() ? ports.GetAvailablePort(22) : ports.GetAvailablePort(3822);
+            Http = OperatingSystem.IsWindows() ? ports.GetAvailablePort(80) : ports.GetAvailablePort(3880);
+            Https = OperatingSystem.IsWindows() ? ports.GetAvailablePort(443) : ports.GetAvailablePort(38443);
+        }
 
-            foreach (var endpoint in tcpListeners)
+        /// <summary>
+        /// 已监听的tcp端口集合
+        /// </summary>
+        private class TcpListenerPortCollection
+        {
+            private readonly HashSet<int> tcpPorts = new();
+
+            /// <summary>
+            /// 已监听的tcp端口集合
+            /// </summary>
+            public TcpListenerPortCollection()
             {
-                if (endpoint.AddressFamily == addressFamily)
+                var tcpListeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
+                foreach (var endpoint in tcpListeners)
                 {
-                    hashSet.Add(endpoint.Port);
+                    this.tcpPorts.Add(endpoint.Port);
                 }
             }
 
-            for (var port = minValue; port < IPEndPoint.MaxPort; port++)
+            /// <summary>
+            /// 获取可用的随机Tcp端口
+            /// </summary>
+            /// <param name="minValue"></param> 
+            /// <returns></returns>
+            public int GetAvailablePort(int minValue)
             {
-                if (hashSet.Contains(port) == false)
+                for (var port = minValue; port < IPEndPoint.MaxPort; port++)
                 {
-                    return port;
+                    if (this.tcpPorts.Contains(port) == false)
+                    {
+                        return port;
+                    }
                 }
+                throw new FastGithubException("当前无可用的端口");
             }
-
-            throw new FastGithubException("当前无可用的端口");
         }
     }
 }

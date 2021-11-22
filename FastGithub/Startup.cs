@@ -56,13 +56,11 @@ namespace FastGithub
             var httpProxyPort = app.ApplicationServices.GetRequiredService<IOptions<FastGithubOptions>>().Value.HttpProxyPort;
             app.MapWhen(context => context.Connection.LocalPort == httpProxyPort, appBuilder =>
             {
-                appBuilder.UseServerHeader();
                 appBuilder.UseHttpProxy();
             });
 
             app.MapWhen(context => context.Connection.LocalPort != httpProxyPort, appBuilder =>
             {
-                appBuilder.UseServerHeader();
                 appBuilder.UseRequestLogging();
                 appBuilder.UseHttpReverseProxy();
 

@@ -2,10 +2,10 @@
 
 namespace FastGithub.FlowAnalyze
 {
-    sealed class FlowAnalyzeDuplexPipe : DuplexPipeStreamAdapter<FlowAnalyzeStream>
+    sealed class FlowAnalyzeDuplexPipe : DelegatingDuplexPipe<FlowAnalyzeStream>
     {
-        public FlowAnalyzeDuplexPipe(IDuplexPipe transport, IFlowAnalyzer flowAnalyzer) :
-            base(transport, stream => new FlowAnalyzeStream(stream, flowAnalyzer))
+        public FlowAnalyzeDuplexPipe(IDuplexPipe duplexPipe, IFlowAnalyzer flowAnalyzer) :
+            base(duplexPipe, stream => new FlowAnalyzeStream(stream, flowAnalyzer))
         {
         }
     }

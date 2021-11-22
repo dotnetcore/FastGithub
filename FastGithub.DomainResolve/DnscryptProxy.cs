@@ -79,10 +79,11 @@ namespace FastGithub.DomainResolve
             var localEndPoint = new IPEndPoint(IPAddress.Loopback, port);
 
             await TomlUtil.SetListensAsync(this.tomlFilePath, localEndPoint, cancellationToken);
-            await TomlUtil.SetlogLevelAsync(this.tomlFilePath, 6, cancellationToken);
-            await TomlUtil.SetEdnsClientSubnetAsync(this.tomlFilePath, cancellationToken);
+            await TomlUtil.SetLogLevelAsync(this.tomlFilePath, 6, cancellationToken);
+            await TomlUtil.SetLBStrategyAsync(this.tomlFilePath, "ph", cancellationToken);
+            await TomlUtil.SetMinMaxTTLAsync(this.tomlFilePath, TimeSpan.FromMinutes(1d), TimeSpan.FromMinutes(2d), cancellationToken);
 
-            if (OperatingSystem.IsWindows() && Process.GetCurrentProcess().SessionId == 0)
+            if (OperatingSystem.IsWindows() && Environment.UserInteractive == false)
             {
                 ServiceInstallUtil.StopAndDeleteService(this.serviceName);
                 ServiceInstallUtil.InstallAndStartService(this.serviceName, this.exeFilePath, ServiceStartType.SERVICE_DEMAND_START);
@@ -108,7 +109,7 @@ namespace FastGithub.DomainResolve
         {
             try
             {
-                if (OperatingSystem.IsWindows() && Process.GetCurrentProcess().SessionId == 0)
+                if (OperatingSystem.IsWindows() && Environment.UserInteractive == false)
                 {
                     ServiceInstallUtil.StopAndDeleteService(this.serviceName);
                 }

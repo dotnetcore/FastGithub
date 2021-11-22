@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,7 +55,14 @@ namespace FastGithub.PacketIntercept.Tcp
                 throw new Win32Exception();
             }
 
-            this.logger.LogInformation($"tcp://{IPAddress.Loopback}:{this.oldServerPort} => tcp://{IPAddress.Loopback}:{this.newServerPort}");
+            if (Socket.OSSupportsIPv4)
+            {
+                this.logger.LogInformation($"{IPAddress.Loopback}:{this.oldServerPort} <=> {IPAddress.Loopback}:{this.newServerPort}");
+            }
+            if (Socket.OSSupportsIPv6)
+            {
+                this.logger.LogInformation($"{IPAddress.IPv6Loopback}:{this.oldServerPort} <=> {IPAddress.IPv6Loopback}:{this.newServerPort}");
+            }
             cancellationToken.Register(hwnd => WinDivert.WinDivertClose((IntPtr)hwnd!), handle);
 
             var packetLength = 0U;

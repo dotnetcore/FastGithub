@@ -32,7 +32,7 @@ namespace FastGithub.HttpServer
         public override async Task OnConnectedAsync(ConnectionContext context)
         {
             var address = await this.domainResolver.ResolveAnyAsync(this.sshOverHttpsEndPoint);
-            using var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+            using var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             await socket.ConnectAsync(address, this.sshOverHttpsEndPoint.Port);
             var targetStream = new NetworkStream(socket, ownsSocket: false);
 

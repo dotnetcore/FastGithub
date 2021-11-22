@@ -29,6 +29,7 @@ namespace FastGithub
         {
             return Host
                 .CreateDefaultBuilder(args)
+                .UseSystemd()
                 .UseWindowsService()
                 .UseDefaultServiceProvider(c =>
                 {
