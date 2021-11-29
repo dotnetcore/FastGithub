@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace FastGithub.Configuration
 {
@@ -16,7 +17,7 @@ namespace FastGithub.Configuration
         /// <summary>
         /// 回退的dns
         /// </summary>
-        public string[] FallbackDns { get; set; } = Array.Empty<string>();
+        public IPEndPoint[] FallbackDns { get; set; } = Array.Empty<IPEndPoint>();
 
         /// <summary>
         /// 代理的域名配置

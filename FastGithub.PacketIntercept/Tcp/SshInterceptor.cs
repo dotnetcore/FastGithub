@@ -15,7 +15,7 @@ namespace FastGithub.PacketIntercept.Tcp
         /// </summary>
         /// <param name="logger"></param>
         public SshInterceptor(ILogger<HttpInterceptor> logger)
-            : base(22, ReverseProxyPort.Ssh, logger)
+            : base(22, GlobalListener.SshPort, logger)
         {
         }
     }

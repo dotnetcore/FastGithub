@@ -18,7 +18,7 @@ namespace FastGithub
         {
             services.TryAddSingleton<DnsClient>();
             services.TryAddSingleton<DnscryptProxy>();
-            services.TryAddSingleton<DomainPersistence>();
+            services.TryAddSingleton<PersistenceService>();
             services.TryAddSingleton<IPAddressService>();
             services.TryAddSingleton<IDomainResolver, DomainResolver>();
             services.AddHostedService<DomainResolveHostedService>();

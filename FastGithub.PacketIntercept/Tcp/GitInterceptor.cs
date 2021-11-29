@@ -5,17 +5,17 @@ using System.Runtime.Versioning;
 namespace FastGithub.PacketIntercept.Tcp
 {
     /// <summary>
-    /// http拦截器
+    /// git拦截器
     /// </summary>   
     [SupportedOSPlatform("windows")]
-    sealed class HttpInterceptor : TcpInterceptor
+    sealed class GitInterceptor : TcpInterceptor
     {
         /// <summary>
-        /// http拦截器
+        /// git拦截器
         /// </summary>
         /// <param name="logger"></param>
-        public HttpInterceptor(ILogger<HttpInterceptor> logger)
-            : base(80, GlobalListener.HttpPort, logger)
+        public GitInterceptor(ILogger<HttpInterceptor> logger)
+            : base(9418, GlobalListener.GitPort, logger)
         {
         }
     }

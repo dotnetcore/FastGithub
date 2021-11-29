@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace FastGithub.Configuration
 {
@@ -26,7 +27,7 @@ namespace FastGithub.Configuration
         /// <summary>
         /// 使用的ip地址
         /// </summary>
-        public string? IPAddress { get; init; }
+        public IPAddress? IPAddress { get; init; }
 
         /// <summary>
         /// 请求超时时长
@@ -59,6 +60,6 @@ namespace FastGithub.Configuration
                 return Configuration.TlsSniPattern.Domain;
             }
             return new TlsSniPattern(this.TlsSniPattern);
-        }
+        } 
     }
 }

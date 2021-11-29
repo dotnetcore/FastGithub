@@ -1,13 +1,10 @@
 ﻿using FastGithub.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using static PInvoke.AdvApi32;
@@ -75,7 +72,7 @@ namespace FastGithub.DomainResolve
         /// <returns></returns>
         private async Task StartCoreAsync(CancellationToken cancellationToken)
         {
-            var port = GetAvailablePort(IPAddress.Loopback.AddressFamily);
+            var port = GlobalListener.GetAvailablePort(5533);
             var localEndPoint = new IPEndPoint(IPAddress.Loopback, port);
 
             await TomlUtil.SetListensAsync(this.tomlFilePath, localEndPoint, cancellationToken);
@@ -127,37 +124,6 @@ namespace FastGithub.DomainResolve
             {
                 this.LocalEndPoint = null;
             }
-        }
-
-        /// <summary>
-        /// 获取可用的随机端口
-        /// </summary>
-        /// <param name="addressFamily"></param>
-        /// <param name="min">最小值</param>
-        /// <returns></returns>
-        private static int GetAvailablePort(AddressFamily addressFamily, int min = 5533)
-        {
-            var hashSet = new HashSet<int>();
-            var tcpListeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
-            var udpListeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveUdpListeners();
-
-            foreach (var endPoint in tcpListeners.Concat(udpListeners))
-            {
-                if (endPoint.AddressFamily == addressFamily)
-                {
-                    hashSet.Add(endPoint.Port);
-                }
-            }
-
-            for (var port = min; port < IPEndPoint.MaxPort; port++)
-            {
-                if (hashSet.Contains(port) == false)
-                {
-                    return port;
-                }
-            }
-
-            throw new FastGithubException("当前无可用的端口");
         }
 
         /// <summary>

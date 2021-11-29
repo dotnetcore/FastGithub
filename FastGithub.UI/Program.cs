@@ -25,6 +25,7 @@ namespace FastGithub.UI
             }
 
             StartFastGithub();
+            SetWebBrowserDPI();
             SetWebBrowserVersion();
 
             var app = new Application();
@@ -70,11 +71,26 @@ namespace FastGithub.UI
         }
 
         /// <summary>
+        /// 设置浏览器DPI
+        /// </summary>
+        private static void SetWebBrowserDPI()
+        {
+            const string subKey = @"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL";
+            var registryKey = Registry.CurrentUser.OpenSubKey(subKey, true);
+            if (registryKey == null)
+            {
+                registryKey = Registry.CurrentUser.CreateSubKey(subKey);
+            }
+            var name = $"{Process.GetCurrentProcess().ProcessName}.exe";
+            registryKey.SetValue(name, 1, RegistryValueKind.DWord);
+        }
+
+        /// <summary>
         /// 启动fastgithub
         /// </summary>
         /// <returns></returns>
         private static void StartFastGithub()
-        { 
+        {
             if (File.Exists(FASTGITHUB_PATH) == false)
             {
                 return;

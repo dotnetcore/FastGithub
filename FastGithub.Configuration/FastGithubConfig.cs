@@ -35,7 +35,7 @@ namespace FastGithub.Configuration
             var opt = options.CurrentValue;
 
             this.HttpProxyPort = opt.HttpProxyPort;
-            this.FallbackDns = ConvertToIPEndPoints(opt.FallbackDns).ToArray();
+            this.FallbackDns = opt.FallbackDns;
             this.domainConfigs = ConvertDomainConfigs(opt.DomainConfigs);
             this.domainConfigCache = new ConcurrentDictionary<string, DomainConfig?>();
 
@@ -49,25 +49,9 @@ namespace FastGithub.Configuration
         private void Update(FastGithubOptions options)
         {
             this.HttpProxyPort = options.HttpProxyPort;
-            this.FallbackDns = ConvertToIPEndPoints(options.FallbackDns).ToArray();
+            this.FallbackDns = options.FallbackDns;
             this.domainConfigs = ConvertDomainConfigs(options.DomainConfigs);
             this.domainConfigCache = new ConcurrentDictionary<string, DomainConfig?>();
-        }
-
-        /// <summary>
-        /// 转换为IPEndPoint
-        /// </summary>
-        /// <param name="ipEndPoints"></param>
-        /// <returns></returns>
-        private static IEnumerable<IPEndPoint> ConvertToIPEndPoints(IEnumerable<string> ipEndPoints)
-        {
-            foreach (var item in ipEndPoints)
-            {
-                if (IPEndPoint.TryParse(item, out var endPoint))
-                {
-                    yield return endPoint;
-                }
-            }
         }
 
         /// <summary>

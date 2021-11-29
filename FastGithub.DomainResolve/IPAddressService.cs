@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,8 +24,8 @@ namespace FastGithub.DomainResolve
         private readonly IMemoryCache domainAddressCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
 
         private record AddressElapsed(IPAddress Address, TimeSpan Elapsed);
-        private readonly TimeSpan brokeElapsedExpiration = TimeSpan.FromMinutes(1d);
-        private readonly TimeSpan normaleElapsedExpiration = TimeSpan.FromMinutes(5d);
+        private readonly TimeSpan problemElapsedExpiration = TimeSpan.FromMinutes(1d);
+        private readonly TimeSpan normalElapsedExpiration = TimeSpan.FromMinutes(5d);
         private readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(5d);
         private readonly IMemoryCache addressElapsedCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
 
@@ -108,20 +107,36 @@ namespace FastGithub.DomainResolve
                 await socket.ConnectAsync(endPoint, linkedTokenSource.Token);
 
                 addressElapsed = new AddressElapsed(endPoint.Address, stopWatch.Elapsed);
-                return this.addressElapsedCache.Set(endPoint, addressElapsed, this.normaleElapsedExpiration);
+                return this.addressElapsedCache.Set(endPoint, addressElapsed, this.normalElapsedExpiration);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 addressElapsed = new AddressElapsed(endPoint.Address, TimeSpan.MaxValue);
-                var expiration = NetworkInterface.GetIsNetworkAvailable() ? this.normaleElapsedExpiration : this.brokeElapsedExpiration;
+                var expiration = IsLocalNetworkProblem(ex) ? this.problemElapsedExpiration : this.normalElapsedExpiration;
                 return this.addressElapsedCache.Set(endPoint, addressElapsed, expiration);
             }
             finally
             {
                 stopWatch.Stop();
             }
+        }
+
+        /// <summary>
+        /// 是否为本机网络问题
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private static bool IsLocalNetworkProblem(Exception ex)
+        {
+            if (ex is not SocketException socketException)
+            {
+                return false;
+            }
+
+            var code = socketException.SocketErrorCode;
+            return code == SocketError.NetworkDown || code == SocketError.NetworkUnreachable;
         }
     }
 }

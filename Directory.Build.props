@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<Version>2.1.0</Version>	
+		<Version>2.1.2</Version>	
 		<Nullable>enable</Nullable>
 		<TargetFramework>net6.0</TargetFramework>
 		<IsWebConfigTransformDisabled>true</IsWebConfigTransformDisabled> 		

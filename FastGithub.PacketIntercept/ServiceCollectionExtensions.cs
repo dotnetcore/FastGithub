@@ -26,6 +26,7 @@ namespace FastGithub
             services.AddHostedService<DnsInterceptHostedService>();
 
             services.AddSingleton<ITcpInterceptor, SshInterceptor>();
+            services.AddSingleton<ITcpInterceptor, GitInterceptor>();
             services.AddSingleton<ITcpInterceptor, HttpInterceptor>();
             services.AddSingleton<ITcpInterceptor, HttpsInterceptor>();
             services.AddHostedService<TcpInterceptHostedService>();

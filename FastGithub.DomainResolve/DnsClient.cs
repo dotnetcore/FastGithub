@@ -31,7 +31,7 @@ namespace FastGithub.DomainResolve
         private readonly ILogger<DnsClient> logger;
 
         private readonly ConcurrentDictionary<string, SemaphoreSlim> semaphoreSlims = new();
-        private readonly IMemoryCache dnsCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+        private readonly IMemoryCache dnsLookupCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
 
         private readonly TimeSpan minTimeToLive = TimeSpan.FromSeconds(30d);
         private readonly TimeSpan maxTimeToLive = TimeSpan.FromMinutes(10d);
@@ -118,13 +118,12 @@ namespace FastGithub.DomainResolve
 
             try
             {
-                if (this.dnsCache.TryGetValue<IList<IPAddress>>(key, out var value))
+                if (this.dnsLookupCache.TryGetValue<IList<IPAddress>>(key, out var value))
                 {
                     return value;
                 }
-
                 var result = await this.LookupCoreAsync(dns, endPoint, fastSort, cancellationToken);
-                return this.dnsCache.Set(key, result.Addresses, result.TimeToLive);
+                return this.dnsLookupCache.Set(key, result.Addresses, result.TimeToLive);
             }
             catch (OperationCanceledException)
             {
@@ -132,14 +131,35 @@ namespace FastGithub.DomainResolve
             }
             catch (Exception ex)
             {
-                this.logger.LogWarning($"{endPoint.Host}@{dns}：{ex.Message}");
-                return Array.Empty<IPAddress>();
+                this.logger.LogWarning($"{endPoint.Host}@{dns}->{ex.Message}");
+                var expiration = IsTcpResetException(ex) ? this.maxTimeToLive : this.minTimeToLive;
+                return this.dnsLookupCache.Set(key, Array.Empty<IPAddress>(), expiration);
             }
             finally
             {
                 semaphore.Release();
             }
         }
+
+        /// <summary>
+        /// 是否为因收到tcp reset导致的关闭
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private static bool IsTcpResetException(Exception ex)
+        {
+            if (ex is SocketException socketException)
+            {
+                if (socketException.SocketErrorCode == SocketError.ConnectionReset)
+                {
+                    return true;
+                }
+            }
+
+            var inner = ex.InnerException;
+            return inner != null && IsTcpResetException(inner);
+        }
+
 
         /// <summary>
         /// 解析域名

@@ -14,6 +14,7 @@ namespace FastGithub.DomainResolve
         private readonly DnscryptProxy dnscryptProxy;
         private readonly IDomainResolver domainResolver;
         private readonly ILogger<DomainResolveHostedService> logger;
+        private readonly TimeSpan dnscryptProxyInitDelay = TimeSpan.FromSeconds(5d);
         private readonly TimeSpan testPeriodTimeSpan = TimeSpan.FromSeconds(1d);
 
         /// <summary>
@@ -41,11 +42,11 @@ namespace FastGithub.DomainResolve
             try
             {
                 await this.dnscryptProxy.StartAsync(stoppingToken);
-                await Task.Delay(TimeSpan.FromSeconds(5d), stoppingToken);
+                await Task.Delay(dnscryptProxyInitDelay, stoppingToken);
 
                 while (stoppingToken.IsCancellationRequested == false)
                 {
-                    await this.domainResolver.TestAllEndPointsAsync(stoppingToken);
+                    await this.domainResolver.TestSpeedAsync(stoppingToken);
                     await Task.Delay(this.testPeriodTimeSpan, stoppingToken);
                 }
             }

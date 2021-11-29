@@ -14,7 +14,7 @@ namespace FastGithub.DomainResolve
     /// <summary>
     /// 域名持久化
     /// </summary>
-    sealed class DomainPersistence
+    sealed class PersistenceService
     {
         private static readonly string dataFile = "dnsendpoints.json";
         private static readonly SemaphoreSlim dataLocker = new(1, 1);
@@ -26,7 +26,7 @@ namespace FastGithub.DomainResolve
         };
 
         private readonly FastGithubConfig fastGithubConfig;
-        private readonly ILogger<DomainPersistence> logger;
+        private readonly ILogger<PersistenceService> logger;
         private record EndPointItem(string Host, int Port);
 
 
@@ -35,9 +35,9 @@ namespace FastGithub.DomainResolve
         /// </summary> 
         /// <param name="fastGithubConfig"></param>
         /// <param name="logger"></param>
-        public DomainPersistence(
+        public PersistenceService(
             FastGithubConfig fastGithubConfig,
-            ILogger<DomainPersistence> logger)
+            ILogger<PersistenceService> logger)
         {
             this.fastGithubConfig = fastGithubConfig;
             this.logger = logger;

@@ -17,6 +17,7 @@ namespace FastGithub
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
+            ConsoleUtil.DisableQuickEdit();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -72,6 +73,7 @@ namespace FastGithub
                         if (OperatingSystem.IsWindows())
                         {
                             kestrel.ListenSshReverseProxy();
+                            kestrel.ListenGitReverseProxy();
                         }
                         else
                         {
