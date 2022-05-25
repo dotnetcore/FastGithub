@@ -9,9 +9,10 @@ github加速神器，解决github打不开、用户头像无法加载、releases
 
 ### 1 程序下载
 * [github-release](https://github.com/dotnetcore/fastgithub/releases)
-* Q群1 [307306673](https://qm.qq.com/cgi-bin/qm/qr?k=cx_MgEIvoo1EMkrKg5tXz8vMdtPap3Rw&jump_from=webapi) [已满]
-* Q群2 [742376932](https://qm.qq.com/cgi-bin/qm/qr?k=6BBJ1nrJwe1o1E4-NJfwSOP-C4sMGc4q&jump_from=webapi) [已满]
-* Q群3 [597131950](https://jq.qq.com/?_wv=1027&k=1YpGW564) [已满]
+#### 有且仅有以下几个群,暂时不打算开新的群,哪个有空位就加哪个
+* Q群1 [307306673](https://qm.qq.com/cgi-bin/qm/qr?k=cx_MgEIvoo1EMkrKg5tXz8vMdtPap3Rw&jump_from=webapi) 
+* Q群2 [742376932](https://qm.qq.com/cgi-bin/qm/qr?k=6BBJ1nrJwe1o1E4-NJfwSOP-C4sMGc4q&jump_from=webapi) 
+* Q群3 [597131950](https://jq.qq.com/?_wv=1027&k=1YpGW564) 
 * Q群4 [492258685](https://jq.qq.com/?_wv=1027&k=bThQHk5P)
   
 ### 2 部署方式
